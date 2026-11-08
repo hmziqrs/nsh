@@ -195,13 +195,9 @@ pub(crate) fn dist() -> anyhow::Result<()> {
     }
 
     // Android runtimes. Windows machines often have no Android SDK: the
-    // distribution is then made without them. The NDK has no toolchain that
-    // runs on arm64 Linux: the distribution there never has them.
-    let ndk_host = !cfg!(all(target_os = "linux", not(target_arch = "x86_64")));
-    let android = ndk_host && (!cfg!(windows) || android::Sdk::find().is_ok());
-    if !ndk_host {
-        term::warn("the NDK does not run on this machine: the distribution has no Android runtime");
-    } else if !android {
+    // distribution is then made without them.
+    let android = !cfg!(windows) || android::Sdk::find().is_ok();
+    if !android {
         term::warn("no Android SDK (ANDROID_HOME): the distribution has no Android runtime");
     }
     let abis: Vec<String> = android::ABIS.iter().map(|a| a.to_string()).collect();

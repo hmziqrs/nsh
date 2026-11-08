@@ -127,12 +127,11 @@ jobs:
             embed: android
           - name: linux-arm64
             os: ubuntu-24.04-arm
-            android: false
           - name: windows-x86_64
             os: windows-latest
           - name: windows-arm64
             os: windows-11-arm
-            android: false
+            java: microsoft
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -180,12 +179,36 @@ jobs:
       # The Android runtime: `javac` + `d8` (Java 17), the SDK's
       # `platforms;android-35` and an NDK (the images have the SDK and NDKs).
       - uses: actions/setup-java@v4
-        if: matrix.android != false
         with:
-          distribution: temurin
+          distribution: ${{ matrix.java || 'temurin' }}
           java-version: "17"
+      # Test only: the Arm images have no Android SDK; install Google's.
+      - name: Install an Android SDK where the image has none
+        run: |
+          if [[ -n "${ANDROID_HOME:-}" && -d "$ANDROID_HOME/cmdline-tools" ]]; then
+            echo "The image's SDK: $ANDROID_HOME"; ls "$ANDROID_HOME/ndk" || true; exit 0
+          fi
+          sdk="$RUNNER_TEMP/android-sdk"
+          case "$RUNNER_OS" in
+            Windows) zip=commandlinetools-win-13114758_latest.zip; sdkmanager=sdkmanager.bat ;;
+            *) zip=commandlinetools-linux-13114758_latest.zip; sdkmanager=sdkmanager ;;
+          esac
+          curl -fsSL -o "$RUNNER_TEMP/tools.zip" "https://dl.google.com/android/repository/$zip"
+          mkdir -p "$sdk/cmdline-tools"
+          unzip -q "$RUNNER_TEMP/tools.zip" -d "$sdk/cmdline-tools"
+          mv "$sdk/cmdline-tools/cmdline-tools" "$sdk/cmdline-tools/latest"
+          tool="$sdk/cmdline-tools/latest/bin/$sdkmanager"
+          yes | "$tool" --sdk_root="$sdk" --licenses > /dev/null || true
+          "$tool" --sdk_root="$sdk" "platforms;android-35" "build-tools;35.0.1" "ndk;28.2.13676358" > /dev/null
+          [[ "$RUNNER_OS" != Windows ]] || sdk="$(cygpath -w "$sdk")"
+          echo "ANDROID_HOME=$sdk" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$sdk" >> "$GITHUB_ENV"
+      - name: Show what the NDK's compiler is built for
+        run: |
+          clang=$(ls -d "$ANDROID_HOME"/ndk/*/toolchains/llvm/prebuilt/*/bin/clang* | head -1)
+          echo "$clang"; file "$clang" || true; uname -m
+          "$clang" --version || echo "::warning::the NDK's clang does not run on this machine"
       - name: Install the Android platform
-        if: matrix.android != false
         run: |
           if [[ ! -f "$ANDROID_HOME/platforms/android-35/android.jar" ]]; then
             sdkmanager=$(ls "$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager* | head -1)
