@@ -185,8 +185,11 @@ fn distribution(exe: &Path) -> anyhow::Result<PathBuf> {
 fn asset() -> anyhow::Result<&'static str> {
     Ok(match (std::env::consts::OS, std::env::consts::ARCH) {
         ("macos", "aarch64") => "nsh-macos-arm64.tar.gz",
+        ("macos", "x86_64") => "nsh-macos-x86_64.tar.gz",
         ("linux", "x86_64") => "nsh-linux-x86_64.tar.gz",
+        ("linux", "aarch64") => "nsh-linux-arm64.tar.gz",
         ("windows", "x86_64") => "nsh-windows-x86_64.zip",
+        ("windows", "aarch64") => "nsh-windows-arm64.zip",
         (os, arch) => bail!("no prebuilt nsh for {os} {arch}; build it from source"),
     })
 }

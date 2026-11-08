@@ -24,7 +24,7 @@ The AppKit host is the default on macOS. Mac Catalyst (`--target catalyst`) need
 
 ## Installing a release
 
-Each [GitHub release](https://github.com/longbridge/nsh/releases) carries the prebuilt distribution (below) for macOS (Apple silicon), Linux x86_64 and Windows x86_64. Every way of installing it puts the same `nsh` command on your `PATH`.
+Each [GitHub release](https://github.com/longbridge/nsh/releases) carries the prebuilt distribution (below) for macOS (Apple silicon and Intel), Linux (x86_64 and arm64) and Windows (x86_64 and arm64). Every way of installing it puts the same `nsh` command on your `PATH`.
 
 **macOS and Linux**, with the install script:
 
@@ -60,10 +60,10 @@ scoop install https://github.com/longbridge/nsh/releases/latest/download/nsh.jso
 mise use -g github:longbridge/nsh
 ```
 
-The archives (`nsh-macos-arm64.tar.gz`, `nsh-linux-x86_64.tar.gz`, `nsh-windows-x86_64.zip`, each with a `.sha256`) carry no version in their names, so `https://github.com/longbridge/nsh/releases/latest/download/<archive>` always fetches the latest. The embedding SDKs are also released alone, for native apps that need no CLI: `nsh-embed-ios.zip` and `nsh-embed-android.zip`.
+The archives (`nsh-macos-arm64.tar.gz`, `nsh-macos-x86_64.tar.gz`, `nsh-linux-x86_64.tar.gz`, `nsh-linux-arm64.tar.gz`, `nsh-windows-x86_64.zip`, `nsh-windows-arm64.zip`, each with a `.sha256`) carry no version in their names, so `https://github.com/longbridge/nsh/releases/latest/download/<archive>` always fetches the latest. The embedding SDKs are also released alone, for native apps that need no CLI: `nsh-embed-ios.zip` and `nsh-embed-android.zip`.
 
 > [!NOTE]
-> The binaries are not signed yet. macOS quarantines files downloaded by a browser; the install script, Homebrew and mise download with `curl` and are not affected, otherwise run `xattr -dr com.apple.quarantine <dir>`. The Linux runtime needs glibc 2.39 and GTK 4.14 or newer (Ubuntu 24.04 and later). There is no Intel Mac or arm64 Linux / Windows build: build those from a checkout.
+> The binaries are not signed yet. macOS quarantines files downloaded by a browser; the install script, Homebrew and mise download with `curl` and are not affected, otherwise run `xattr -dr com.apple.quarantine <dir>`. The Linux runtime needs glibc 2.39 and GTK 4.14 or newer (Ubuntu 24.04 and later). The arm64 Linux and Windows distributions have no Android runtime (the NDK does not run on arm64 Linux); package Android apps from macOS or x86_64 Linux and Windows. Homebrew and Scoop install the Apple silicon, x86_64 Linux and x86_64 Windows builds; use the install script on the others.
 
 ## For apps written in Rust
 

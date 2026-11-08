@@ -24,7 +24,7 @@ macOS 上的默认目标为 AppKit。Mac Catalyst（`--target catalyst`）和 iO
 
 ## 安装发布版本
 
-每个 [GitHub release](https://github.com/longbridge/nsh/releases) 都附带 macOS（Apple silicon）、Linux x86_64 和 Windows x86_64 的预构建发行包（见下文）。无论用哪种方式安装，`PATH` 上得到的都是同一个 `nsh` 命令。
+每个 [GitHub release](https://github.com/longbridge/nsh/releases) 都附带 macOS（Apple silicon 和 Intel）、Linux（x86_64 和 arm64）和 Windows（x86_64 和 arm64）的预构建发行包（见下文）。无论用哪种方式安装，`PATH` 上得到的都是同一个 `nsh` 命令。
 
 **macOS 和 Linux**，使用安装脚本：
 
@@ -60,10 +60,10 @@ scoop install https://github.com/longbridge/nsh/releases/latest/download/nsh.jso
 mise use -g github:longbridge/nsh
 ```
 
-压缩包（`nsh-macos-arm64.tar.gz`、`nsh-linux-x86_64.tar.gz`、`nsh-windows-x86_64.zip`，各带一个 `.sha256`）的文件名不含版本号，所以 `https://github.com/longbridge/nsh/releases/latest/download/<压缩包>` 总是下载最新版本。嵌入用的 SDK 也单独发布，供不需要 CLI 的原生应用使用：`nsh-embed-ios.zip` 和 `nsh-embed-android.zip`。
+压缩包（`nsh-macos-arm64.tar.gz`、`nsh-macos-x86_64.tar.gz`、`nsh-linux-x86_64.tar.gz`、`nsh-linux-arm64.tar.gz`、`nsh-windows-x86_64.zip`、`nsh-windows-arm64.zip`，各带一个 `.sha256`）的文件名不含版本号，所以 `https://github.com/longbridge/nsh/releases/latest/download/<压缩包>` 总是下载最新版本。嵌入用的 SDK 也单独发布，供不需要 CLI 的原生应用使用：`nsh-embed-ios.zip` 和 `nsh-embed-android.zip`。
 
 > [!NOTE]
-> 二进制文件暂未签名。macOS 会隔离浏览器下载的文件；安装脚本、Homebrew 和 mise 用 `curl` 下载，不受影响，否则请运行 `xattr -dr com.apple.quarantine <目录>`。Linux 运行时需要 glibc 2.39 和 GTK 4.14 或更新版本（Ubuntu 24.04 及以后）。目前没有 Intel Mac 和 arm64 Linux / Windows 的构建，请从源码构建。
+> 二进制文件暂未签名。macOS 会隔离浏览器下载的文件；安装脚本、Homebrew 和 mise 用 `curl` 下载，不受影响，否则请运行 `xattr -dr com.apple.quarantine <目录>`。Linux 运行时需要 glibc 2.39 和 GTK 4.14 或更新版本（Ubuntu 24.04 及以后）。arm64 Linux 和 Windows 的发行包不含 Android 运行时（NDK 不能在 arm64 Linux 上运行），请在 macOS 或 x86_64 的 Linux、Windows 上打包 Android 应用。Homebrew 和 Scoop 安装 Apple silicon、x86_64 Linux 和 x86_64 Windows 的构建，其他平台请用安装脚本。
 
 ## 用 Rust 编写的应用
 
